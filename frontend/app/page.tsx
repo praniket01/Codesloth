@@ -1,7 +1,14 @@
 "use client";
 
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  MarkerType,
+  Position,
+} from "@xyflow/react";
 import { useCallback, useMemo, useState } from "react";
-import { ReactFlow, Background, Controls, MiniMap, MarkerType } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { api, API_URL } from "@/lib/api";
 import { ArrowRight, BrainCircuit, Check, ChevronDown, ChevronRight, Code2, ExternalLink, FileCode2, Folder, FolderOpen, GitBranch, Github, LoaderCircle, Search, ShieldCheck, Sparkles, Workflow, X } from "lucide-react";
@@ -104,7 +111,7 @@ export default function Home() {
     const nodes = visible.map(n => {
       const layer = rank.get(n.id) || 0;
       const row = rowById.get(n.id) || 0;
-      return { id: n.id, position: { x: layer * 300, y: row * 105 }, data: { label: <div className="graph-node"><FileCode2 size={14}/><div><strong>{n.label}</strong><small>{n.language} · {n.symbols_count} symbols</small></div></div> }, style: { width: 220, borderRadius: 12, border: "1px solid #29374d", background: "#0d1524", color: "#e5edf9", padding: 10 }, sourcePosition: "right" as const, targetPosition: "left" as const };
+      return { id: n.id, position: { x: layer * 300, y: row * 105 }, data: { label: <div className="graph-node"><FileCode2 size={14}/><div><strong>{n.label}</strong><small>{n.language} · {n.symbols_count} symbols</small></div></div> }, style: { width: 220, borderRadius: 12, border: "1px solid #29374d", background: "#0d1524", color: "#e5edf9", padding: 10 }, sourcePosition: Position.Left as const, targetPosition: Position.Left as const };
     });
     const edges = visibleEdges.map(e => ({ id: e.id, source: e.source, target: e.target, label: e.label, markerEnd: { type: MarkerType.ArrowClosed, color: "#7185a5" }, style: { stroke: "#536783", strokeWidth: 1.3 }, labelStyle: { fill: "#9eb0cb", fontSize: 10 } }));
     return { nodes, edges, totalNodes: analysis.nodes.length, totalEdges: analysis.edges.length };
@@ -122,7 +129,7 @@ export default function Home() {
       position: { x: node.layer * 300, y: (row.get(node.id) || 0) * 150 },
       data: { label: <div className="architecture-node"><div className="architecture-node-top"><span className="architecture-dot" style={{ background: node.color }} /><strong>{node.label}</strong><span className="architecture-count">{node.file_count}</span></div><small>{node.description}</small><small className="architecture-files">{node.files.slice(0, 2).join(" · ")}{node.file_count > 2 ? ` +${node.file_count - 2} more` : ""}</small></div> },
       style: { width: 245, borderRadius: 12, border: `1px solid ${node.color}88`, background: "#0d1524", color: "#e5edf9", padding: 12 },
-      sourcePosition: "right" as const, targetPosition: "left" as const,
+      sourcePosition: Position.Right as const, targetPosition: Position.Left as const,
     }));
     const edges = architecture.edges.map(edge => ({ id: edge.id, source: edge.source, target: edge.target, label: edge.label, markerEnd: { type: MarkerType.ArrowClosed, color: "#7185a5" }, style: { stroke: "#536783", strokeWidth: Math.min(3, 1 + Math.log2(edge.weight + 1) / 2) }, labelStyle: { fill: "#9eb0cb", fontSize: 9 }, labelBgStyle: { fill: "#0b1220", fillOpacity: 0.92 } }));
     return { nodes, edges, totalNodes: nodes.length, totalEdges: edges.length };
